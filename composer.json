@@ -26,8 +26,5 @@
         "psr-4": {
             "easmith\\selectel\\storage\\": "src"
         }
-    },
-    "require-dev": {
-        "rector/rector": "^0.5.3"
     }
 }
