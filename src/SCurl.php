@@ -192,7 +192,7 @@ class SCurl
     {
         $result = array();
         $code = explode("\r\n", $head);
-        preg_match('/HTTP.+ (.+)/', $code[0], $codeMatches);
+        preg_match('/HTTP.+ (\d\d\d)/', $code[0], $codeMatches);
         $result['HTTP-Code'] = (int)$codeMatches[1];
         preg_match_all("/([A-z\-]+): (.*)\r\n/", $head, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
