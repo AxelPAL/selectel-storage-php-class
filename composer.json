@@ -2,7 +2,7 @@
     "name": "axelpal/selectel-storage",
     "description": "Selectel Storage API php wrapper",
     "minimum-stability": "stable",
-    "license": "LGPL-3.0+",
+    "license": "LGPL-3.0-or-later",
     "authors": [
         {
             "name": "Eugene Smith",
@@ -21,7 +21,6 @@
         "php": ">=7.0",
         "ext-curl": "*"
     },
-    "version": "1.0.4.1",
     "autoload": {
         "psr-4": {
             "easmith\\selectel\\storage\\": "src"
