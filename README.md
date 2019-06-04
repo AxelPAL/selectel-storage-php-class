@@ -3,10 +3,10 @@ selectel-storage-php-class
 
 composer.json
 
-```js
+```json
 
 "require": {
-    "easmith/selectel-storage": "~1.0",
+    "axelpal/selectel-storage": "~1.0",
 }
 
 ```

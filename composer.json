@@ -1,11 +1,15 @@
 {
-    "name": "easmith/selectel-storage",
+    "name": "axelpal/selectel-storage",
     "description": "Selectel Storage API php wrapper",
     "minimum-stability": "stable",
     "license": "LGPL-3.0+",
     "authors": [
         {
             "name": "Eugene Smith",
+            "role": "Developer"
+        },
+        {
+            "name": "Alexander Palchikov <axelpal@gmail.com>",
             "role": "Developer"
         }
     ],
@@ -14,12 +18,16 @@
         "source": "https://github.com/easmith/selectel-storage-php-class"
     },
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=7.0",
+        "ext-curl": "*"
     },
-    "version": "1.0.2",
+    "version": "1.0.3",
     "autoload": {
         "psr-4": {
             "easmith\\selectel\\storage\\": "src"
         }
+    },
+    "require-dev": {
+        "rector/rector": "^0.5.3"
     }
 }

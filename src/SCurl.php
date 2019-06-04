@@ -14,21 +14,22 @@ namespace easmith\selectel\storage;
 class SCurl
 {
 
-    static private $instance = null;
+    /** @var self */
+    private static $instance;
 
     /**
      * Curl resource
      *
      * @var null|resource
      */
-    private $ch = null;
+    private $ch;
 
     /**
      * Current URL
      *
      * @var string
      */
-    private $url = null;
+    private $url;
 
     /**
      * Last request result
@@ -65,8 +66,6 @@ class SCurl
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 2);
         curl_setopt($this->ch, CURLOPT_BINARYTRANSFER, true);
-// TODO: big files
-// curl_setopt($this->ch, CURLOPT_RANGE, "0-100");
     }
 
     /**
@@ -75,9 +74,9 @@ class SCurl
      *
      * @return SCurl
      */
-    static function init($url)
+    public static function init($url): SCurl
     {
-        if (self::$instance == null) {
+        if (self::$instance === null) {
             self::$instance = new SCurl($url);
         }
         return self::$instance->setUrl($url);
@@ -88,7 +87,7 @@ class SCurl
      *
      * @param string $url URL
      *
-     * @return SCurl
+     * @return SCurl|null
      */
     public function setUrl($url)
     {
@@ -96,11 +95,17 @@ class SCurl
         return self::$instance;
     }
 
+    /**
+     * @param $file
+     * @return mixed
+     * @throws SelectelStorageException
+     */
     public function putFile($file)
     {
-        if (!file_exists($file))
+        if (!file_exists($file)) {
             throw new SelectelStorageException("File '{$file}' does not exist");
-        $fp = fopen($file, "r");
+        }
+        $fp = fopen($file, 'rb');
         curl_setopt($this->ch, CURLOPT_INFILE, $fp);
         curl_setopt($this->ch, CURLOPT_INFILESIZE, filesize($file));
         $this->request('PUT');
@@ -115,7 +120,7 @@ class SCurl
      *
      * @return SCurl
      */
-    public function request($method)
+    public function request($method): SCurl
     {
         $this->method($method);
         $this->params = array();
@@ -126,7 +131,7 @@ class SCurl
         $this->result['info'] = curl_getinfo($this->ch);
         $this->result['header'] = $this->parseHead($response[0]);
         unset($response[0]);
-        $this->result['content'] = join("\r\n\r\n", $response);
+        $this->result['content'] = implode("\r\n\r\n", $response);
 
         // reinit
         $this->curlInit();
@@ -141,29 +146,34 @@ class SCurl
      *
      * @return SCurl
      */
-    private function method($method)
+    private function method($method): SCurl
     {
         switch ($method) {
-            case "GET" : {
-                $this->url .= "?" . http_build_query($this->params);
+            case 'GET' :
+            {
+                $this->url .= '?' . http_build_query($this->params);
                 curl_setopt($this->ch, CURLOPT_HTTPGET, true);
                 break;
             }
-            case "HEAD" : {
-                $this->url .= "?" . http_build_query($this->params);
+            case 'HEAD' :
+            {
+                $this->url .= '?' . http_build_query($this->params);
                 curl_setopt($this->ch, CURLOPT_NOBODY, true);
                 break;
             }
-            case "POST" : {
+            case 'POST' :
+            {
                 curl_setopt($this->ch, CURLOPT_POST, true);
                 curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($this->params));
                 break;
             }
-            case "PUT" : {
+            case 'PUT' :
+            {
                 curl_setopt($this->ch, CURLOPT_PUT, true);
                 break;
             }
-            default : {
+            default :
+            {
                 curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
                 break;
             }
@@ -174,26 +184,32 @@ class SCurl
     /**
      * Header Parser
      *
-     * @param array $head
+     * @param string $head
      *
      * @return array
      */
-    private function parseHead($head)
+    private function parseHead($head): array
     {
         $result = array();
         $code = explode("\r\n", $head);
-        $result['HTTP-Code'] = intval(str_replace("HTTP/1.1", "", $code[0]));
-        preg_match_all("/([A-z\-]+)\: (.*)\r\n/", $head, $matches, PREG_SET_ORDER);
-        foreach ($matches as $match)
+        preg_match('/HTTP.+ (.+)/', $code[0], $codeMatches);
+        $result['HTTP-Code'] = (int)$codeMatches[1];
+        preg_match_all("/([A-z\-]+): (.*)\r\n/", $head, $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
             $result[strtolower($match[1])] = $match[2];
+        }
 
         return $result;
     }
 
+    /**
+     * @param $contents
+     * @return mixed
+     */
     public function putFileContents($contents)
     {
-        $fp = fopen("php://temp", "r+");
-        fputs($fp, $contents);
+        $fp = fopen('php://temp', 'rb+');
+        fwrite($fp, $contents);
         rewind($fp);
         curl_setopt($this->ch, CURLOPT_INFILE, $fp);
         curl_setopt($this->ch, CURLOPT_INFILESIZE, strlen($contents));
@@ -209,9 +225,9 @@ class SCurl
      *
      * @return SCurl
      */
-    public function setHeaders($headers)
+    public function setHeaders($headers): SCurl
     {
-        $headers = array_merge(array("Expect:"), $headers);
+        $headers = array_merge(['Expect:'], $headers);
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
         return self::$instance;
     }
@@ -223,7 +239,7 @@ class SCurl
      *
      * @return SCurl
      */
-    public function setParams($params)
+    public function setParams($params): SCurl
     {
         $this->params = $params;
         return self::$instance;
@@ -234,7 +250,7 @@ class SCurl
      *
      * @return array
      */
-    public function getResult()
+    public function getResult(): array
     {
         return $this->result;
     }
@@ -246,19 +262,20 @@ class SCurl
      *
      * @return array
      */
-    public function getHeaders($header = null)
+    public function getHeaders($header = null): array
     {
-        if (!is_null($header))
+        if ($header !== null) {
             $this->result['header'][$header];
+        }
         return $this->result['header'];
     }
 
     /**
      * Getting content of last response
      *
-     * @return array
+     * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->result['content'];
     }
@@ -270,10 +287,11 @@ class SCurl
      *
      * @return array
      */
-    public function getInfo($info = null)
+    public function getInfo($info = null): array
     {
-        if (!is_null($info))
+        if ($info !== null) {
             $this->result['info'][$info];
+        }
         return $this->result['info'];
     }
 
