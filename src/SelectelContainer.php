@@ -88,7 +88,7 @@ class SelectelContainer extends SelectelStorage
     {
         $res = $this->listFiles(1, '', $name, null, null, 'json');
         $info = current(json_decode($res, true));
-        return $this->format === 'json' ? json_encode($info) : $info;
+        return is_array($info) && !empty($info) ? $info : [];
     }
 
     /**
@@ -146,7 +146,8 @@ class SelectelContainer extends SelectelStorage
     public function putFile($localFileName, $remoteFileName = null, $headers = []): array
     {
         if ($remoteFileName === null) {
-            $remoteFileName = array_pop(explode(DIRECTORY_SEPARATOR, $localFileName));
+            $pathArray = explode(DIRECTORY_SEPARATOR, $localFileName);
+            $remoteFileName = array_pop($pathArray);
         }
         $headers = array_merge($headers, $this->token);
         $info = SCurl::init($this->url . $remoteFileName)
@@ -192,7 +193,7 @@ class SelectelContainer extends SelectelStorage
      * @return int
      * @throws SelectelStorageException
      */
-    public function setFileHeaders($name, $headers)
+    public function setFileHeaders($name, $headers): int
     {
         $headers = $this->getX($headers, 'X-Container-Meta-');
         if (get_class($this) !== 'SelectelContainer') {
