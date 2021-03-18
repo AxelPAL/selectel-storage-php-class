@@ -54,7 +54,7 @@ class SelectelStorage
      * @param string $user Account id
      * @param string $key Storage key
      * @param string|null $format Allowed response formats
-     * @param int|null $timeout Timeout for getting response from Selectel
+     * @param int|null $timeout Timeout for getting response from Selectel in milliseconds
      *
      * @throws SelectelStorageException
      */

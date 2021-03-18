@@ -76,5 +76,7 @@ $deleteRes = $container->delete('example.php');
 
 ### Passing Timeout to request
 ```php
-$selectelStorage = new axelpal\selectel\storage\SelectelStorage("user", "pass", $format, $timeout);
+$format = null;
+$timeoutInMilliseconds = 5000;
+$selectelStorage = new axelpal\selectel\storage\SelectelStorage("user", "pass", $format, $timeoutInMilliseconds);
 ```
