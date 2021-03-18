@@ -6,7 +6,7 @@ composer.json
 ```json
 
 "require": {
-    "axelpal/selectel-storage": "~1.0",
+    "axelpal/selectel-storage": "~2.0",
 }
 
 ```
