@@ -14,17 +14,17 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/easmith/selectel-storage-php-class/issues",
-    "source": "https://github.com/easmith/selectel-storage-php-class"
+    "issues": "https://github.com/axelpal/selectel-storage-php-class/issues",
+    "source": "https://github.com/axelpal/selectel-storage-php-class"
   },
   "require": {
-    "php": ">=7.0",
+    "php": ">=7.2",
     "ext-curl": "*",
     "ext-json": "*"
   },
   "autoload": {
     "psr-4": {
-      "easmith\\selectel\\storage\\": "src"
+      "axelpal\\selectel\\storage\\": "src"
     }
   }
 }

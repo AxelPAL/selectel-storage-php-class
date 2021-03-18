@@ -1,17 +1,16 @@
 <?php
 
-namespace easmith\selectel\storage;
+namespace axelpal\selectel\storage;
 
 use Exception;
 
 /**
- * Created 06.09.14 23:44 by PhpStorm.
- *
- * PHP version 5
+ * PHP version 7
  *
  * @category selectel-storage-php-class
  * @package class_package
  * @author Eugene Kuznetcov <easmith@mail.ru>
+ * @author Alexander Palchikov <axelpal@gmail.com>
  */
 class SelectelStorageException extends Exception
 {

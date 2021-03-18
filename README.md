@@ -16,7 +16,7 @@ composer.json
 <?php
     
 require_once("vendor/autoload.php");
-$selectelStorage = new SelectelStorage("User", "Pass");
+$selectelStorage = new axelpal\selectel\storage\SelectelStorage("user", "pass");
 
 ```
 
@@ -24,7 +24,7 @@ $selectelStorage = new SelectelStorage("User", "Pass");
 ```php
 $container = $selectelStorage->createContainer('selectel', array("X-Container-Meta-Type: public"));
 // get container info
-$container->getInfo()
+$container->getInfo();
 ```
 
 ### Containers list
@@ -34,7 +34,7 @@ $containerList = $selectelStorage->listContainers();
 
 ### Create directory
 ```php
-$container->createDirectory('php/test')
+$container->createDirectory('php/test');
 ```
 
 ### List
@@ -61,10 +61,20 @@ $file = $container->getFile($fileList[0]);
 
 ### Copy file
 ```php
-$copyRes = $container->copy('example.php', 'php/test/Examples_copy.php5');
+$copyRes = $container->copy('example.php', 'php/test/Examples_copy.php');
+```
+
+### Create link
+```php
+$copyRes = $container->createLink('links/example.php', 'example.php');
 ```
 
 ### Delete
 ```php
 $deleteRes = $container->delete('example.php');
+```
+
+### Passing Timeout to request
+```php
+$selectelStorage = new axelpal\selectel\storage\SelectelStorage("user", "pass", $format, $timeout);
 ```

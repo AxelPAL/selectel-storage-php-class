@@ -1,15 +1,14 @@
 <?php
 
-namespace easmith\selectel\storage;
+namespace axelpal\selectel\storage;
 
 /**
- * Created 06.09.14 23:47 by PhpStorm.
- *
- * PHP version 5
+ * PHP version 7
  *
  * @category selectel-storage-php-class
  * @package class_package
  * @author Eugene Kuznetcov <easmith@mail.ru>
+ * @author Alexander Palchikov <axelpal@gmail.com>
  */
 class SCurl
 {
@@ -36,27 +35,27 @@ class SCurl
      *
      * @var array
      */
-    private $result = array();
+    private $result = [];
 
     /**
      * Request params
      *
      * @var array
      */
-    private $params = array();
+    private $params = [];
 
     /**
      * Curl wrapper
      *
      * @param string $url
      */
-    private function __construct($url)
+    private function __construct(string $url)
     {
         $this->setUrl($url);
         $this->curlInit();
     }
 
-    private function curlInit()
+    private function curlInit(): void
     {
         $this->ch = curl_init($this->url);
         curl_setopt($this->ch, CURLOPT_ENCODING, 'gzip,deflate');
@@ -65,7 +64,6 @@ class SCurl
         curl_setopt($this->ch, CURLOPT_HEADER, true);
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($this->ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($this->ch, CURLOPT_BINARYTRANSFER, true);
     }
 
     /**
@@ -74,7 +72,7 @@ class SCurl
      *
      * @return SCurl
      */
-    public static function init($url): SCurl
+    public static function init(string $url): SCurl
     {
         if (self::$instance === null) {
             self::$instance = new SCurl($url);
@@ -89,7 +87,7 @@ class SCurl
      *
      * @return SCurl|null
      */
-    public function setUrl($url)
+    public function setUrl(string $url): ?SCurl
     {
         $this->url = $url;
         return self::$instance;
@@ -97,13 +95,13 @@ class SCurl
 
     /**
      * @param $file
-     * @return mixed
+     * @return SCurl
      * @throws SelectelStorageException
      */
-    public function putFile($file)
+    public function putFile($file): SCurl
     {
         if (!file_exists($file)) {
-            throw new SelectelStorageException("File '{$file}' does not exist");
+            throw new SelectelStorageException("File '$file' does not exist");
         }
         $fp = fopen($file, 'rb');
         curl_setopt($this->ch, CURLOPT_INFILE, $fp);
@@ -114,16 +112,16 @@ class SCurl
     }
 
     /**
-     * Set method and request
+     * Set configureMethod and request
      *
      * @param string $method
      *
      * @return SCurl
      */
-    public function request($method): SCurl
+    public function request(string $method): SCurl
     {
-        $this->method($method);
-        $this->params = array();
+        $this->configureMethod($method);
+        $this->params = [];
         curl_setopt($this->ch, CURLOPT_URL, $this->url);
 
         $response = explode("\r\n\r\n", curl_exec($this->ch));
@@ -133,20 +131,17 @@ class SCurl
         unset($response[0]);
         $this->result['content'] = implode("\r\n\r\n", $response);
 
-        // reinit
         $this->curlInit();
 
         return self::$instance;
     }
 
     /**
-     * Set request method
+     * Set request configureMethod
      *
      * @param string $method
-     *
-     * @return SCurl
      */
-    private function method($method): SCurl
+    private function configureMethod(string $method): void
     {
         switch ($method) {
             case 'GET' :
@@ -178,7 +173,6 @@ class SCurl
                 break;
             }
         }
-        return self::$instance;
     }
 
     /**
@@ -188,9 +182,9 @@ class SCurl
      *
      * @return array
      */
-    private function parseHead($head): array
+    private function parseHead(string $head): array
     {
-        $result = array();
+        $result = [];
         $code = explode("\r\n", $head);
         preg_match('/HTTP.+ (\d\d\d)/', $code[0], $codeMatches);
         $result['HTTP-Code'] = (int)$codeMatches[1];
@@ -204,9 +198,9 @@ class SCurl
 
     /**
      * @param $contents
-     * @return mixed
+     * @return SCurl
      */
-    public function putFileContents($contents)
+    public function putFileContents($contents): SCurl
     {
         $fp = fopen('php://temp', 'rb+');
         fwrite($fp, $contents);
@@ -225,10 +219,22 @@ class SCurl
      *
      * @return SCurl
      */
-    public function setHeaders($headers): SCurl
+    public function setHeaders(array $headers): SCurl
     {
         $headers = array_merge(['Expect:'], $headers);
         curl_setopt($this->ch, CURLOPT_HTTPHEADER, $headers);
+        return self::$instance;
+    }
+
+    /**
+     * @param int|null $timeout Timeout in milliseconds
+     * @return SCurl
+     */
+    public function setTimeout(?int $timeout): SCurl
+    {
+        if ($timeout !== null) {
+            curl_setopt($this->ch, CURLOPT_TIMEOUT_MS, $timeout);
+        }
         return self::$instance;
     }
 
@@ -239,7 +245,7 @@ class SCurl
      *
      * @return SCurl
      */
-    public function setParams($params): SCurl
+    public function setParams(array $params): SCurl
     {
         $this->params = $params;
         return self::$instance;
@@ -258,16 +264,11 @@ class SCurl
     /**
      * Getting headers of last response
      *
-     * @param string $header Header
-     *
      * @return array
      */
-    public function getHeaders($header = null): array
+    public function getHeaders(): array
     {
-        if ($header !== null) {
-            $this->result['header'][$header];
-        }
-        return $this->result['header'];
+        return $this->result['header'] ?? [];
     }
 
     /**
@@ -277,21 +278,16 @@ class SCurl
      */
     public function getContent(): string
     {
-        return $this->result['content'];
+        return $this->result['content'] ?? '';
     }
 
     /**
      * Getting info of last response
      *
-     * @param string $info Info's field
-     *
      * @return array
      */
-    public function getInfo($info = null): array
+    public function getInfo(): array
     {
-        if ($info !== null) {
-            $this->result['info'][$info];
-        }
         return $this->result['info'];
     }
 
