@@ -117,6 +117,7 @@ class SCurl
      * @param string $method
      *
      * @return SCurl
+     * @throws SelectelStorageException
      */
     public function request(string $method): SCurl
     {
@@ -181,10 +182,14 @@ class SCurl
      * @param string $head
      *
      * @return array
+     * @throws SelectelStorageException
      */
     private function parseHead(string $head): array
     {
         $result = [];
+        if (empty($head)) {
+            throw new SelectelStorageException('Empty answer from Selectel.');
+        }
         $code = explode("\r\n", $head);
         preg_match('/HTTP.+ (\d\d\d)/', $code[0], $codeMatches);
         $result['HTTP-Code'] = (int)$codeMatches[1];
@@ -199,6 +204,7 @@ class SCurl
     /**
      * @param $contents
      * @return SCurl
+     * @throws SelectelStorageException
      */
     public function putFileContents($contents): SCurl
     {

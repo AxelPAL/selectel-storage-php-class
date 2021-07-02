@@ -70,6 +70,7 @@ class SelectelContainer extends SelectelStorage
      * @param array $headers
      *
      * @return array
+     * @throws SelectelStorageException
      */
     public function getFile(string $name, $headers = []): array
     {
@@ -87,6 +88,7 @@ class SelectelContainer extends SelectelStorage
      * @param string $name File name
      *
      * @return array
+     * @throws SelectelStorageException
      */
     public function getFileInfo(string $name): array
     {
@@ -106,6 +108,7 @@ class SelectelContainer extends SelectelStorage
      * @param string $format Format
      *
      * @return array|string
+     * @throws SelectelStorageException
      */
     public function listFiles(
         $limit = 10000,
@@ -216,6 +219,7 @@ class SelectelContainer extends SelectelStorage
      * @param string $name Directory name
      *
      * @return array
+     * @throws SelectelStorageException
      */
     public function createDirectory(string $name): array
     {

@@ -97,6 +97,7 @@ class SelectelStorage
      * Getting storage info
      *
      * @return array
+     * @throws SelectelStorageException
      */
     public function getInfo(): array
     {
@@ -135,6 +136,7 @@ class SelectelStorage
      * @param string $format Format ('', 'json', 'xml') (Default self::$format)
      *
      * @return array
+     * @throws SelectelStorageException
      */
     public function listContainers($limit = 10000, $marker = '', $format = null): array
     {
@@ -238,6 +240,7 @@ class SelectelStorage
      * @param string $destination Destination
      *
      * @return array
+     * @throws SelectelStorageException
      */
     public function copy(string $origin, string $destination): array
     {
